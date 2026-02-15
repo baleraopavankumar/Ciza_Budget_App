@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIZA Gen-3 | Smart Budgeting Pro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#0f172a;
+    --card:rgba(30,41,59,0.7);
+    --accent:#10b981;
+    --blue:#3b82f6;
+    --purple:#8b5cf6;
+    --text:#f8fafc;
+    --dim:#94a3b8;
+}
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:radial-gradient(circle at top right,#1e293b,#0f172a);
+    font-family:'Plus Jakarta Sans',sans-serif;
+    color:var(--text);
+    padding:20px;
+}
+
+.calculator{
+    background:var(--card);
+    backdrop-filter:blur(12px);
+    padding:35px;
+    border-radius:22px;
+    width:100%;
+    max-width:400px;
+    border:1px solid rgba(255,255,255,0.08);
+    box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);
+}
+
+.brand{
+    font-weight:800;
+    font-size:26px;
+    background:linear-gradient(to right,#10b981,#3b82f6);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.tagline{
+    font-size:11px;
+    color:var(--dim);
+    margin-bottom:25px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+input, select{
+    width:100%;
+    background:transparent;
+    border:none;
+    border-bottom:2px solid #334155;
+    padding:10px 0;
+    font-size:20px;
+    color:#fff;
+    margin-bottom:20px;
+    outline:none;
+}
+
+input:focus{
+    border-color:var(--accent);
+}
+
+select{
+    font-size:14px;
+    margin-bottom:25px;
+    color:var(--dim);
+}
+
+.result{
+    margin-bottom:20px;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:6px;
+}
+
+.label{
+    font-size:12px;
+    color:var(--dim);
+}
+
+.value{
+    font-weight:700;
+}
+
+.progress{
+    height:6px;
+    border-radius:10px;
+    background:#1e293b;
+    overflow:hidden;
+}
+
+.progress div{
+    height:100%;
+    width:0%;
+    transition:width 0.6s ease;
+}
+
+.needs-bar{background:var(--accent)}
+.wants-bar{background:var(--blue)}
+.savings-bar{background:var(--purple)}
+
+.mode-toggle{
+    margin-bottom:20px;
+    font-size:13px;
+    color:var(--dim);
+}
+
+.footer-note{
+    font-size:10px;
+    color:var(--dim);
+    margin-top:15px;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+<div class="brand">CIZA.</div>
+<div class="tagline">Smart Budgeting Engine</div>
+
+<input type="number" id="income" placeholder="Enter Monthly Income">
+
+<select id="currency">
+    <option value="USD">USD ($)</option>
+    <option value="INR">INR (₹)</option>
+</select>
+
+<select id="mode" class="mode-toggle">
+    <option value="standard">50 / 30 / 20 (Balanced)</option>
+    <option value="aggressive">50 / 20 / 30 (Wealth Mode)</option>
+</select>
+
+<div class="result">
+    <div class="row">
+        <span class="label">Needs</span>
+        <span class="value" id="needsVal">0</span>
+    </div>
+    <div class="progress"><div class="needs-bar" id="needsBar"></div></div>
+</div>
+
+<div class="result">
+    <div class="row">
+        <span class="label">Wants</span>
+        <span class="value" id="wantsVal">0</span>
+    </div>
+    <div class="progress"><div class="wants-bar" id="wantsBar"></div></div>
+</div>
+
+<div class="result">
+    <div class="row">
+        <span class="label">Savings</span>
+        <span class="value" id="savingsVal">0</span>
+    </div>
+    <div class="progress"><div class="savings-bar" id="savingsBar"></div></div>
+</div>
+
+<div class="footer-note">
+    Discipline today = Freedom tomorrow.
+</div>
+
+</div>
+
+<script>
+const incomeInput = document.getElementById("income");
+const currencySelect = document.getElementById("currency");
+const modeSelect = document.getElementById("mode");
+
+incomeInput.addEventListener("input", calculate);
+currencySelect.addEventListener("change", calculate);
+modeSelect.addEventListener("change", calculate);
+
+function calculate(){
+    const income = parseFloat(incomeInput.value) || 0;
+    const currency = currencySelect.value;
+    const mode = modeSelect.value;
+
+    let needsP = 0.5;
+    let wantsP = mode === "standard" ? 0.3 : 0.2;
+    let savingsP = mode === "standard" ? 0.2 : 0.3;
+
+    const formatter = new Intl.NumberFormat('en-IN', {
+        style:'currency',
+        currency:currency,
+        maximumFractionDigits:0
+    });
+
+    const needs = income * needsP;
+    const wants = income * wantsP;
+    const savings = income * savingsP;
+
+    document.getElementById("needsVal").innerText = formatter.format(needs);
+    document.getElementById("wantsVal").innerText = formatter.format(wants);
+    document.getElementById("savingsVal").innerText = formatter.format(savings);
+
+    document.getElementById("needsBar").style.width = (needsP*100)+"%";
+    document.getElementById("wantsBar").style.width = (wantsP*100)+"%";
+    document.getElementById("savingsBar").style.width = (savingsP*100)+"%";
+}
+</script>
+
+</body>
+</html>
